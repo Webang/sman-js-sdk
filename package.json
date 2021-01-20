@@ -1,0 +1,24 @@
+{
+  "name": "sman-js-sdk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "example": "example",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup src/index.js -o lib/index.js",
+    "dev": "rollup src/index.js -w -o lib/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup": "^2.37.0",
+    "rollup-watch": "^4.3.1"
+  }
+}
