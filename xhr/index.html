@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  console.log(XMLHttpRequest.prototype);
+
+  var MXMLHttpRequest = window.XMLHttpRequest;
+
+  window.XMLHttpRequest = function () {
+    const m = new MXMLHttpRequest();
+    const start_time = Date.now();
+
+    m.addEventListener('readystatechange', function(e) {
+      const xmlhttp = e.target;
+      if (xmlhttp.readyState == 4) { // 4 = "loaded"
+        console.log(xmlhttp.responseURL)
+      }
+    })
+    return m;
+  }
+
+  var xmlhttp;
+
+  loadXMLDoc('http://localhost:3030/api/dd')
+
+  function loadXMLDoc(url) {
+    xmlhttp = null;
+    xmlhttp = new XMLHttpRequest();
+
+    if (xmlhttp != null) {
+      xmlhttp.addEventListener('readystatechange', state_Change, false);
+      xmlhttp.open("GET", url, true);
+      xmlhttp.send(null);
+    } else {
+      alert("Your browser does not support XMLHTTP.");
+    }
+  }
+
+  function state_Change() {
+    if (xmlhttp.readyState == 4) { // 4 = "loaded"
+      if (xmlhttp.status == 200) { // 200 = "OK"
+        // console.log(xmlhttp.responseText)
+        // document.getElementById('A1').innerHTML = xmlhttp.status;
+        // document.getElementById('A2').innerHTML = xmlhttp.statusText;
+        // document.getElementById('A3').innerHTML = xmlhttp.responseText;
+      } else {
+        alert("Problem retrieving XML data:" + xmlhttp.statusText);
+      }
+    }
+  }
+
+</script>
+</html>

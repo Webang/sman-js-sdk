@@ -1,72 +1,77 @@
-function resolveStack(e) {
-  const frames = []
-  const list = e.error.stack.split('\n');
+export function initErrorEvent(ctx) {
+  function resolveStack(e) {
+    const frames = []
+    const list = e
+      .error
+      .stack
+      .split('\n');
 
-  list.forEach((element, index) => {
-    if (index !== 0) {
-      const reg = /^(    at)( .*)?( .*)$/
-      let [, , arg2, arg3] = reg.exec(element);
-      let fun = arg2 ? arg2.replace(/\s/g, '') : '?';
+    list.forEach((element, index) => {
+      if (index !== 0) {
+        const reg = /^(    at)( .*)?( .*)$/
+        let [,,
+          arg2,
+          arg3] = reg.exec(element);
+        let fun = arg2
+          ? arg2.replace(/\s/g, '')
+          : '?';
 
-      const [protol, filename, lineno, colno] = arg3
-        .replace(/\s/g, '')
-        .replace('(', '')
-        .replace(')', '')
-        .split(':');
+        const [protol,
+          filename,
+          lineno,
+          colno] = arg3
+          .replace(/\s/g, '')
+          .replace('(', '')
+          .replace(')', '')
+          .split(':');
 
-      frames.push({
-        filename: protol + ':' + filename, // 文件名
-        colno: +colno, // 列数
-        function: fun, // 调用函数
-        lineno: +lineno // 行数
-      })
-    }
-  });
-  return frames;
-}
-
-// catch resource load error, such as js css img...
-window.addEventListener('error', function (e) {
-  const target = e.target
-  if (target !== window) {
-    console.log({
-      type: target.localName,
-      url: target.src || target.href,
-      msg: (target.src || target.href) + ' load error',
-      time: new Date().getTime(),
-    })
+        frames.push({
+          filename: protol + ':' + filename, // 文件名
+          colno: + colno, // 列数
+          function: fun, // 调用函数
+          lineno: + lineno // 行数
+        })
+      }
+    });
+    return frames;
   }
-}, true)
 
-// catch Promise.reject
-window.addEventListener('unhandledrejection', function(e) {
-  console.log(e)
-  console.log({
-    type: 'promise',
-    url: window.location.href,
-    msg: (e.reason && e.reason.msg) || e.reason || '',
-    time: new Date().getTime(),
+  // 资源加载错误
+  window
+    .addEventListener('error', function (e) {
+      const target = e.target
+      if (target !== window) {
+        ctx.sendErrorEevent({
+          type: 'resource',
+          value: (target.src || target.href) + ' load error',
+          message: (target.src || target.href) + ' load error',
+        })
+      }
+    }, true)
+
+  // Promise.reject
+  window.addEventListener('unhandledrejection', function (e) {
+    ctx.sendErrorEevent({
+      type: 'unhandledrejection',
+      value: (e.reason && e.reason.msg) || e.reason || '',
+      message: (e.reason && e.reason.msg) || e.reason || '',
+    })
   })
-})
 
-// catch js error which is not Promise.reject
-window.addEventListener('error', function(e) {
-  const [type, value] = e.message.replace('Uncaught ', '').split(': ');
-  const payload = {
-    time: Date.now(),
-    event_id: "4c460712c9b0476ebe45fcf37026e14b",
-    platform: 'javascript',
-    request: {
-      url: "file:///Users/arraybuffer/Desktop/sentry/02-sentry/index.html",
-      'User-Agent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36"
-    },
-    exception: {
+  // 常规JS错误
+  window.addEventListener('error', function (e) {
+    const message = e.message;
+    const [type,
+      value] = message
+      .replace('Uncaught ', '')
+      .split(': ');
+    ctx.sendErrorEevent({
       type: type,
       value: value,
+      message: message,
       stacktrace: {
         frames: resolveStack(e)
       }
-    }
-  }
-  console.log(payload)
-});
+    });
+  });
+}
