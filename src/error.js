@@ -44,11 +44,14 @@ export function initErrorEvent(ctx) {
 
   // Promise.reject
   window.addEventListener('unhandledrejection', function (e) {
-    ctx.sendErrorEevent({
-      type: 'unhandledrejection',
-      value: (e.reason && e.reason.msg) || e.reason || '',
-      message: (e.reason && e.reason.msg) || e.reason || '',
-    })
+    // console.log(e)
+    if (!e.reason.isAxiosError) {
+      ctx.sendErrorEevent({
+        type: 'unhandledrejection',
+        value: (e.reason && e.reason.msg) || e.reason || '',
+        message: (e.reason && e.reason.msg) || e.reason || '',
+      })
+    }
   })
 
   // 常规JS错误

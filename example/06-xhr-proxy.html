@@ -11,14 +11,33 @@
 
 </body>
 <script>
-  console.log(XMLHttpRequest.prototype);
 
+  // 常规JS错误
+  window.addEventListener('error', function (e) {
+    // const message = e.message
+    console.log('error', e)
+  })
+
+  window.addEventListener('unhandledrejection', function (e) {
+    console.log('unhandledrejection', e)
+  })
+
+  // 资源加载错误
+  window.addEventListener(
+    'error',
+    function (e) {
+      const target = e.target
+      console.log(111);
+    },
+    true
+  )
+
+  // XHR Request
   var MXMLHttpRequest = window.XMLHttpRequest;
 
   window.XMLHttpRequest = function () {
     const m = new MXMLHttpRequest();
     const start_time = Date.now();
-
     m.addEventListener('readystatechange', function(e) {
       const xmlhttp = e.target;
       if (xmlhttp.readyState == 4) { // 4 = "loaded"
@@ -30,7 +49,7 @@
 
   var xmlhttp;
 
-  loadXMLDoc('http://localhost:3030/api/dd')
+  loadXMLDoc('http://localhost:3030')
 
   function loadXMLDoc(url) {
     xmlhttp = null;
@@ -47,16 +66,8 @@
 
   function state_Change() {
     if (xmlhttp.readyState == 4) { // 4 = "loaded"
-      if (xmlhttp.status == 200) { // 200 = "OK"
-        // console.log(xmlhttp.responseText)
-        // document.getElementById('A1').innerHTML = xmlhttp.status;
-        // document.getElementById('A2').innerHTML = xmlhttp.statusText;
-        // document.getElementById('A3').innerHTML = xmlhttp.responseText;
-      } else {
-        alert("Problem retrieving XML data:" + xmlhttp.statusText);
-      }
+      console.log(xmlhttp.status)
     }
   }
-
 </script>
 </html>
