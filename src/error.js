@@ -44,7 +44,6 @@ export function initErrorEvent(ctx) {
 
   // Promise.reject
   window.addEventListener('unhandledrejection', function (e) {
-    // console.log(e)
     if (!e.reason.isAxiosError) {
       ctx.sendErrorEevent({
         type: 'unhandledrejection',

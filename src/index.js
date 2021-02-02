@@ -21,6 +21,7 @@ const sman = {
   // 获取公共参数
   getCommonParams() {
     return {
+      appkey: config.appkey,
       event_id: genUUID(),
       user_id: getUserId(),
       platform: 'javascript',
@@ -76,9 +77,9 @@ const sman = {
   },
 }
 
-sman.init({
-  appkey: '6Wdfr6MCuo6Q9DGC',
-  url: 'http://localhost:3030',
-})
+// sman.init({
+//   appkey: '6Wdfr6MCuo6Q9DGC',
+//   url: 'http://localhost:3030',
+// })
 
 export default sman
