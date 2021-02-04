@@ -6,16 +6,29 @@ import { initErrorEvent } from './error'
 import { initUser, getUserId } from './user'
 import { initPerformance } from './performance';
 
-let config = {}
-let count = 0
+let config = {};
+// let count = 0;
+// let maxCount = 99;
 
 const sman = {
   init(opt) {
-    config = opt
-    initUser(this)
-    initXhr(this)
-    initErrorEvent(this)
-    initPerformance(this)
+    config = opt;
+    initUser(this);
+    initXhr(this);
+    initErrorEvent(this);
+    initPerformance(this);
+
+    // SDK 数据上报接口URL
+    this.addErrorUrl = opt.url + '/error/add';
+    this.addGatewayUrl = opt.url + '/gateway/create';
+    this.addPageViewUrl = opt.url + '/page-view/add';
+
+    // 以下URL的请求不上报，避免死循环
+    this.ajaxWhiteUrl = [
+      this.addErrorUrl,
+      this.addGatewayUrl,
+      this.addPageViewUrl,
+    ]
   },
 
   // 获取公共参数
@@ -40,26 +53,31 @@ const sman = {
   sendErrorEevent(exception) {
     const payload = this.getCommonParams()
     payload.exception = exception
-    if (count < 4) {
-      count++
       axios({
-        url: `${config.url}/error/add`,
+        url: this.addErrorUrl,
         method: 'POST',
         data: payload,
+        headers: {
+          is_report: 1
+        }
+      }).catch(e => {
+        console.log(e);
       })
-    }
   },
 
+  // 页面性能
   sendPageView(params) {
     const payload = this.getCommonParams()
     axios({
-      url: `${config.url}/page-view/add`,
+      url: this.addPageViewUrl,
       method: 'POST',
       data: {
         page_title: document.title,
         ...payload,
         ...params,
       }
+    }).catch(e => {
+      console.log(e)
     })
   },
 
@@ -67,12 +85,14 @@ const sman = {
   sendXhrEvent(data) {
     const payload = this.getCommonParams()
     axios({
-      url: `${config.url}/gateway/create`,
+      url: this.addGatewayUrl,
       method: 'POST',
       data: {
         ...payload,
         ...data,
       }
+    }).catch(e => {
+      console.log(e)
     })
   },
 }
