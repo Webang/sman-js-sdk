@@ -19,9 +19,9 @@ const sman = {
     initPerformance(this);
 
     // SDK 数据上报接口URL
-    this.addErrorUrl = opt.url + '/error/add';
-    this.addGatewayUrl = opt.url + '/gateway/create';
-    this.addPageViewUrl = opt.url + '/page-view/add';
+    this.addErrorUrl = opt.url + '/report/error';
+    this.addGatewayUrl = opt.url + '/report/gateway';
+    this.addPageViewUrl = opt.url + '/report/pageview';
 
     // 以下URL的请求不上报，避免死循环
     this.ajaxWhiteUrl = [
